@@ -4,9 +4,10 @@ import androidx.lifecycle.ViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @HiltViewModel
-class MainViewModel: ViewModel() {
+class MainViewModel @Inject constructor(): ViewModel() {
 
     suspend fun loadMyBucketList() = withContext(Dispatchers.IO) {
         //Code for loading from API the list
