@@ -1,10 +1,11 @@
 package com.gnosis.bucketlistgroup.app.build
 
 import android.content.Context
-import com.gnosis.bucketlistgroup.data.api.UserApi
+import com.gnosis.bucketlistgroup.data.api.WishesApi
 import com.gnosis.bucketlistgroup.data.db.AppDatabase
 import com.gnosis.bucketlistgroup.data.db.RoomDB
-import com.gnosis.bucketlistgroup.data.db.UserRepository
+import com.gnosis.bucketlistgroup.data.db.WishesRepository
+import com.gnosis.bucketlistgroup.util.AppRxSchedulers
 import com.gnosis.bucketlistgroup.util.RxBus
 import com.gnosis.bucketlistgroup.util.RxSchedulers
 import com.google.gson.Gson
@@ -14,6 +15,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Cache
 import okhttp3.OkHttpClient
@@ -26,7 +28,7 @@ import javax.inject.Named
 import javax.inject.Singleton
 
 @Module
-@InstallIn(ActivityComponent::class)
+@InstallIn(SingletonComponent::class)
 object AppModules {
 
     @Singleton
@@ -42,9 +44,8 @@ object AppModules {
 object NetworkModule {
 
     @Provides
-    fun okHttpClient(loggingInterceptor: HttpLoggingInterceptor, cache: Cache): OkHttpClient {
+    fun okHttpClient(cache: Cache): OkHttpClient {
         return OkHttpClient.Builder()
-            .addNetworkInterceptor(loggingInterceptor)
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
             .writeTimeout(60, TimeUnit.SECONDS)
@@ -53,9 +54,9 @@ object NetworkModule {
     }
 
     @Provides
-    fun cache(context: Context, @Named("OkHttpCacheDir") cacheDir: String, @Named(
+    fun cache(@ApplicationContext appContext: Context, @Named("OkHttpCacheDir") cacheDir: String, @Named(
         "OkHttpCacheSize") cacheSize: Int): Cache {
-        return Cache(File(context.filesDir, cacheDir), cacheSize.toLong())
+        return Cache(File(appContext.filesDir, cacheDir), cacheSize.toLong())
     }
 
     @Provides
@@ -91,8 +92,8 @@ object RestModule {
 
     @Singleton
     @Provides
-    fun userApi(retrofit: Retrofit): UserApi {
-        return retrofit.create(UserApi::class.java)
+    fun wishesApi(retrofit: Retrofit): WishesApi {
+        return retrofit.create(WishesApi::class.java)
     }
 }
 
@@ -105,6 +106,12 @@ object RxModule {
     fun rxBus(): RxBus {
         return RxBus()
     }
+
+    @Singleton
+    @Provides
+    fun rxSchedulers(): RxSchedulers {
+        return AppRxSchedulers()
+    }
 }
 
 @Module
@@ -113,13 +120,13 @@ object DataModule {
 
     @Singleton
     @Provides
-    fun appDatabase(context: Context): AppDatabase {
-        return RoomDB(context).appDatabase
+    fun appDatabase(@ApplicationContext appContext: Context): AppDatabase {
+        return RoomDB(appContext).appDatabase
     }
 
     @Singleton
     @Provides
-    fun userRepository(appDatabase: AppDatabase, rxSchedulers: RxSchedulers): UserRepository {
-        return UserRepository(appDatabase, rxSchedulers)
+    fun wishesRepository(appDatabase: AppDatabase, rxSchedulers: RxSchedulers): WishesRepository {
+        return WishesRepository(appDatabase, rxSchedulers)
     }
 }
