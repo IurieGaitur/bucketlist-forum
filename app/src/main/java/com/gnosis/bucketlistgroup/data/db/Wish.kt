@@ -5,3 +5,5 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Wish(@PrimaryKey val id: Int, val name: String)
+
+data class Wishe(val id: Int, val name: String)

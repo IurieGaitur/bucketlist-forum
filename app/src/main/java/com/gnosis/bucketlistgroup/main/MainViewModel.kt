@@ -21,9 +21,16 @@ class MainViewModel @Inject constructor(
 
     suspend fun loadMyBucketList() = withContext(Dispatchers.IO) {
         //Code for loading from API the list
-//        val whises = wishesApi.getAll()
-        Log.d("Hilt app", "Get wishes")
-        wishesRepository.insertAll(emptyList())
+        try {
+            val whises = wishesApi.getAll().body()
+            Log.d("Hilt app", "Get wishes - ${whises?.size}")
+            whises?.let {
+                wishesRepository.insertAll(whises)
+            }
+        } catch (ex: Exception) {
+            Log.e("App", ex.toString())
+        }
+
 
     }
 

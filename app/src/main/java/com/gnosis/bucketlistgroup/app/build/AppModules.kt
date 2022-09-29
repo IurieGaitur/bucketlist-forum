@@ -10,16 +10,13 @@ import com.gnosis.bucketlistgroup.util.RxBus
 import com.gnosis.bucketlistgroup.util.RxSchedulers
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ActivityComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.Cache
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.File
@@ -82,10 +79,8 @@ object RestModule {
                         rxSchedulers: RxSchedulers): Retrofit {
 
         return Retrofit.Builder()
-            .addCallAdapterFactory(
-                RxJava2CallAdapterFactory.createWithScheduler(rxSchedulers.network()))
             .addConverterFactory(GsonConverterFactory.create(gson))
-            .baseUrl("http://test.url")
+            .baseUrl("https://ad1bc7ca-72f1-4d8d-9cf4-3d440bd08436.mock.pstmn.io/")
             .client(okHttpClient)
             .build()
     }
