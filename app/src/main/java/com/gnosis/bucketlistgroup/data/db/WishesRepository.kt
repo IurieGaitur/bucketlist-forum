@@ -13,4 +13,8 @@ class WishesRepository(val db: AppDatabase, val rxSchedulers: RxSchedulers) {
         Log.d("Hilt app", "Save wishes locally")
         //db.wishesDao().insertAll(wishes)
     }
+
+    suspend fun getAll(): List<Wish> {
+        return  db.wishesDao().getAll()
+    }
 }
